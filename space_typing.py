@@ -481,21 +481,21 @@ class Boss:
         total_w = 0
         for i, ch in enumerate(word):
             if i < confirmed:
-                s = font_med.render(ch, True, RED)
+                ls = font_med.render(ch, True, RED)
             elif i < typed_len:
-                s = font_med.render(ch, True, GRAY)
+                ls = font_med.render(ch, True, GRAY)
             else:
-                s = font_med.render(ch, True, WHITE)
-            word_letters.append(s)
-            total_w += s.get_width()
+                ls = font_med.render(ch, True, WHITE)
+            word_letters.append(ls)
+            total_w += ls.get_width()
         wx = sx - total_w // 2
         wy = cy + s + 15
         pygame.draw.rect(screen, BLACK, (wx-6, wy-4, total_w+12, 34), border_radius=5)
         pygame.draw.rect(screen, GRAY, (wx-6, wy-4, total_w+12, 34), 1, border_radius=5)
         cur_x = wx
-        for s in word_letters:
-            screen.blit(s, (cur_x, wy))
-            cur_x += s.get_width()
+        for ls in word_letters:
+            screen.blit(ls, (cur_x, wy))
+            cur_x += ls.get_width()
 
         if self.phase == "small" and len(self.small_word_queue) > 1:
             info = font_tiny.render(f"+ {len(self.small_word_queue)-1} more", True, GRAY)
