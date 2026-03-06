@@ -1083,4 +1083,5 @@ async def main():
                 if player.hp < player.max_hp:
                     player.hp = min(player.max_hp, player.hp + 1)
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
