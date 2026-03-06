@@ -3,6 +3,7 @@ import random
 import math
 import sys
 import time
+import asyncio
 
 pygame.init()
 
@@ -676,9 +677,10 @@ def draw_hud(level, timer_left, score, typed_text, target_word):
 # ============================================================
 #  SCREEN: TITLE
 # ============================================================
-def title_screen():
+async def title_screen():
     anim = 0
     while True:
+        await asyncio.sleep(0)
         screen.fill(DARK)
         draw_stars()
         scroll_stars()
@@ -717,9 +719,10 @@ def title_screen():
 # ============================================================
 #  SCREEN: LEVEL INTRO
 # ============================================================
-def level_intro(level):
+async def level_intro(level):
     timer = 120
     while timer > 0:
+        await asyncio.sleep(0)
         screen.fill(DARK)
         draw_stars()
         scroll_stars()
@@ -749,9 +752,10 @@ def level_intro(level):
 # ============================================================
 #  SCREEN: BOSS INTRO
 # ============================================================
-def boss_intro(level):
+async def boss_intro(level):
     timer = 100
     while timer > 0:
+        await asyncio.sleep(0)
         screen.fill((15, 0, 0))
         draw_stars()
 
@@ -769,8 +773,9 @@ def boss_intro(level):
 # ============================================================
 #  SCREEN: GAME OVER / WIN
 # ============================================================
-def end_screen(won, score):
+async def end_screen(won, score):
     while True:
+        await asyncio.sleep(0)
         screen.fill(DARK)
         draw_stars()
 
@@ -817,7 +822,7 @@ def find_target(typed, enemies):
 # ============================================================
 #  MAIN GAME LOOP
 # ============================================================
-def play_level(level, score, player):
+async def play_level(level, score, player):
     global combo_count, max_combo
     pool_name, max_enemies, speed, boss_hp = LEVEL_CONFIG[level]
     word_pool = WORDS[pool_name]
@@ -845,6 +850,7 @@ def play_level(level, score, player):
 
     running = True
     while running:
+        await asyncio.sleep(0)
         dt = clock.tick(FPS)
         screen.fill(DARK)
         draw_stars()
@@ -869,6 +875,7 @@ def play_level(level, score, player):
                     screen.blit(pause_hint, (WIDTH//2 - pause_hint.get_width()//2, HEIGHT//2 + 20))
                     pygame.display.flip()
                     while paused:
+                        await asyncio.sleep(0)
                         for pe in pygame.event.get():
                             if pe.type == pygame.QUIT:
                                 pygame.quit(); sys.exit()
@@ -955,7 +962,7 @@ def play_level(level, score, player):
                 enemies.clear()
                 typed_text = ""
                 target_enemy = None
-                boss_intro(level)
+                await boss_intro(level)
                 boss = Boss(level, pool_name)
 
         # ---- Spawn enemies ----
@@ -1049,31 +1056,31 @@ def play_level(level, score, player):
 # ============================================================
 #  MAIN
 # ============================================================
-def main():
+async def main():
     global combo_count, max_combo
     while True:
-        title_screen()
+        await title_screen()
         score = 0
         combo_count = 0
         max_combo = 0
         player = Player()
 
         for level in range(1, 11):
-            level_intro(level)
-            result, score = play_level(level, score, player)
+            await level_intro(level)
+            result, score = await play_level(level, score, player)
 
             if result == "dead":
-                r = end_screen(False, score)
+                r = await end_screen(False, score)
                 if r == "restart":
                     break
             elif result == "quit":
                 pygame.quit(); sys.exit()
             elif result == "next":
                 if level == 10:
-                    end_screen(True, score)
+                    await end_screen(True, score)
                     break
                 # Small heal between levels
                 if player.hp < player.max_hp:
                     player.hp = min(player.max_hp, player.hp + 1)
 
-main()
+asyncio.run(main())
